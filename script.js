@@ -124,24 +124,6 @@ function verifyTicketData(ticketData, resultDiv) {
   updateTicketList();
 }
 
-// ----- Verify Ticket via QR Data (manual paste) -----
-function verifyTicket() {
-  const verificationData = document.getElementById('verificationInput').value.trim();
-  const resultDiv = document.getElementById('verificationResult');
-  if (!verificationData) {
-    resultDiv.innerHTML = "Please paste the ticket token to verify!";
-    resultDiv.className = "result invalid";
-    return;
-  }
-  try {
-    const ticketData = JSON.parse(verificationData);
-    verifyTicketData(ticketData, resultDiv);
-  } catch (e) {
-    resultDiv.innerHTML = "❌ Invalid QR format!";
-    resultDiv.className = "result invalid";
-  }
-}
-
 // ----- Verify Ticket Manually via Input Fields -----
 function verifyTicketManual() {
   const ticketId = document.getElementById('manualTicketId').value.trim();
@@ -187,6 +169,19 @@ function onScanSuccess(decodedText, decodedResult) {
 
 function onScanError(errorMessage) {
   console.warn("Scan error:", errorMessage);
+}
+
+// ----- Toggle Manual Verification Display -----
+function toggleManualVerification() {
+  const container = document.getElementById('manual-verification-container');
+  const toggleBtn = document.getElementById('toggleManualBtn');
+  if (container.style.display === "none") {
+    container.style.display = "block";
+    toggleBtn.textContent = "Hide Manual Verification";
+  } else {
+    container.style.display = "none";
+    toggleBtn.textContent = "Show Manual Verification";
+  }
 }
 
 // ----- Export CSV Database (Verification Data) -----

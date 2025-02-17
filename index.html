@@ -30,27 +30,30 @@
       <button id="saveQRButton" onclick="saveQR()" style="display: none;">Save QR Code</button>
     </section>
 
-    <!-- Verification Section (Linked to CSV database) -->
+    <!-- Verification Section -->
     <section class="verification">
       <h2>Verify Ticket</h2>
-      <!-- Verification via QR Code -->
+      <!-- Camera-based Verification -->
       <div class="form-container">
-        <input type="text" id="verificationInput" placeholder='Paste ticket token here'>
-        <button onclick="verifyTicket()">Verify with QR Data</button>
         <button onclick="startScanner()">Scan QR Code</button>
       </div>
       <!-- Div for the QR scanner -->
-      <div id="qr-reader" style="width:300px"></div>
+      <div id="qr-reader" style="width:300px; margin: auto;"></div>
       <div id="verificationResult" class="result"></div>
       
-      <!-- Verification via Manual Input -->
-      <h3>Or Verify Manually</h3>
+      <!-- Toggle Manual Verification -->
       <div class="form-container">
-        <input type="text" id="manualTicketId" placeholder="Enter Ticket ID">
-        <input type="text" id="manualAttendeeName" placeholder="Enter Attendee Name">
-        <button onclick="verifyTicketManual()">Verify Ticket Manually</button>
+        <button id="toggleManualBtn" onclick="toggleManualVerification()">Show Manual Verification</button>
       </div>
-      <div id="manualVerificationResult" class="result"></div>
+      <!-- Manual Verification Section (hidden by default) -->
+      <div id="manual-verification-container" style="display:none;">
+        <div class="form-container">
+          <input type="text" id="manualTicketId" placeholder="Enter Ticket ID">
+          <input type="text" id="manualAttendeeName" placeholder="Enter Attendee Name">
+          <button onclick="verifyTicketManual()">Verify Ticket Manually</button>
+        </div>
+        <div id="manualVerificationResult" class="result"></div>
+      </div>
     </section>
 
     <!-- Ticket Database Section (For verification only) -->

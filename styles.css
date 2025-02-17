@@ -32,6 +32,8 @@ body {
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Add bottom margin to avoid footer overlap */
+    margin-bottom: 80px;
   }
   
   h2 {
@@ -105,7 +107,7 @@ body {
   
   .result.used {
     background-color: #fff3cd;
-    color: #856404;
+    color: #a37c04;
   }
   
   /* Database Section */
@@ -132,8 +134,5 @@ body {
     padding: 10px;
     background-color: #007bff;
     color: white;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
   }
   
