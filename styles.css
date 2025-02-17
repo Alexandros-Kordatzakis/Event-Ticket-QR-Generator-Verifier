@@ -28,7 +28,7 @@
   #brandLogo {
     width: 400px;
     display: block;
-    margin: 0 auto 0px;
+    margin: auto auto auto;
   }
   
   header h1 {
