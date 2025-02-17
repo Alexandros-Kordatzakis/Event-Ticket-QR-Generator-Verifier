@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event QR Generator</title>
+  <title>Event QR Generator & Verifier</title>
   <link rel="stylesheet" href="styles.css">
   <!-- QR code generator library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -12,22 +12,22 @@
   <script src="script.js" defer></script>
 </head>
 <body>
-  <header>
-    <h1>Event Ticket QR Generator</h1>
-    <p>Generate QR codes and verify event tickets.</p>
+  <header role="banner">
+    <img id="brandLogo" src="Media/logo.png" alt="Event Logo" />
+    <h1>Event Ticket QR Generator & Verifier</h1>
   </header>
 
-  <main>
-    <!-- QR Generator Section (No database link) -->
+  <main role="main">
+    <!-- QR Generator Section (Not linked to the database) -->
     <section class="generator">
       <h2>Generate QR Code</h2>
       <div class="form-container">
-        <input type="text" id="ticketId" placeholder="Enter Ticket ID">
-        <input type="text" id="attendeeName" placeholder="Enter Attendee Name">
-        <button onclick="generateQR()">Generate QR Code</button>
+        <input type="text" id="ticketId" placeholder="Enter Ticket ID" aria-label="Ticket ID">
+        <input type="text" id="attendeeName" placeholder="Enter Attendee Name" aria-label="Attendee Name">
+        <button onclick="generateQR()" aria-label="Generate QR Code">Generate QR Code</button>
       </div>
-      <div id="qrcode" class="qr-output"></div>
-      <button id="saveQRButton" onclick="saveQR()" style="display: none;">Save QR Code</button>
+      <div id="qrcode" class="qr-output" aria-live="polite"></div>
+      <button id="saveQRButton" onclick="saveQR()" style="display: none;" aria-label="Save QR Code">Save QR Code</button>
     </section>
 
     <!-- Verification Section -->
@@ -35,39 +35,40 @@
       <h2>Verify Ticket</h2>
       <!-- Camera-based Verification -->
       <div class="form-container">
-        <button onclick="startScanner()">Scan QR Code</button>
+        <button onclick="startScanner()" aria-label="Start QR Code Scanner">Scan QR Code</button>
       </div>
       <!-- Div for the QR scanner -->
       <div id="qr-reader" style="width:300px; margin: auto;"></div>
-      <div id="verificationResult" class="result"></div>
+      <div id="verificationResult" class="result" aria-live="polite"></div>
       
       <!-- Toggle Manual Verification -->
       <div class="form-container">
-        <button id="toggleManualBtn" onclick="toggleManualVerification()">Show Manual Verification</button>
+        <button id="toggleManualBtn" onclick="toggleManualVerification()" aria-label="Toggle Manual Verification">Show Manual Verification</button>
       </div>
       <!-- Manual Verification Section (hidden by default) -->
       <div id="manual-verification-container" style="display:none;">
         <div class="form-container">
-          <input type="text" id="manualTicketId" placeholder="Enter Ticket ID">
-          <input type="text" id="manualAttendeeName" placeholder="Enter Attendee Name">
-          <button onclick="verifyTicketManual()">Verify Ticket Manually</button>
+          <input type="text" id="manualTicketId" placeholder="Enter Ticket ID" aria-label="Manual Ticket ID">
+          <input type="text" id="manualAttendeeName" placeholder="Enter Attendee Name" aria-label="Manual Attendee Name">
+          <button onclick="verifyTicketManual()" aria-label="Verify Ticket Manually">Verify Ticket Manually</button>
         </div>
-        <div id="manualVerificationResult" class="result"></div>
+        <div id="manualVerificationResult" class="result" aria-live="polite"></div>
       </div>
     </section>
 
-    <!-- Ticket Database Section (For verification only) -->
+    <!-- Database & Audit Section -->
     <section class="database">
       <h2>Ticket Database</h2>
       <div class="db-buttons">
-        <button onclick="exportCSV()">Export CSV Database</button>
-        <button onclick="resetDatabase()">Reload Database</button>
+        <button onclick="exportCSV()" aria-label="Export Ticket Database">Export CSV Database</button>
+        <button onclick="resetDatabase()" aria-label="Reload Ticket Database">Reload Database</button>
+        <button onclick="exportAuditLog()" aria-label="Export Audit Log">Export Audit Log</button>
       </div>
       <div id="ticketList"></div>
     </section>
   </main>
 
-  <footer>
+  <footer role="contentinfo">
     <p>&copy; 2025 Event QR Generator by Alexandros Kordatzakis. All rights reserved.</p>
   </footer>
 </body>

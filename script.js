@@ -1,9 +1,15 @@
-// In-memory CSV data loaded from tickets.csv (used only for verification)
+// In-memory CSV data loaded from tickets.csv (for verification)
 let ticketDatabase = "";
 // For saving the QR image filename
 let lastGeneratedTicket = null;
 // For QR scanning
 let html5QrcodeScanner = null;
+// In-memory audit log array
+let auditLog = [];
+
+/* ----- Real-Time Sync ----- */
+// Poll the backend (CSV file) every 15 seconds to update data.
+setInterval(loadDatabase, 15000);
 
 // ----- Load Static CSV Database (for verification) -----
 function loadDatabase() {
@@ -97,10 +103,17 @@ function saveQR() {
   link.click();
 }
 
+// ----- Audit Logging -----
+function logAudit(action, ticketData, message) {
+  const timestamp = new Date().toLocaleString();
+  auditLog.push({ timestamp, action, ticketData, message });
+}
+
 // ----- Helper: Verify Ticket Data against the CSV Database -----
 function verifyTicketData(ticketData, resultDiv) {
   const rows = ticketDatabase.trim().split('\n');
   let found = false;
+  let logMessage = "";
   for (let i = 1; i < rows.length; i++) {
     const [dbTicketId, dbName, attended] = rows[i].split(',');
     if (dbTicketId === ticketData.ticketId && dbName === ticketData.name) {
@@ -109,9 +122,11 @@ function verifyTicketData(ticketData, resultDiv) {
         rows[i] = `${dbTicketId},${dbName},true`;
         resultDiv.innerHTML = "✅ Valid ticket! Attendee marked as attended.";
         resultDiv.className = "result valid";
+        logMessage = "Ticket verified successfully.";
       } else {
         resultDiv.innerHTML = "⚠️ Ticket already used!";
         resultDiv.className = "result used";
+        logMessage = "Ticket already used.";
       }
       break;
     }
@@ -119,12 +134,14 @@ function verifyTicketData(ticketData, resultDiv) {
   if (!found) {
     resultDiv.innerHTML = "❌ Ticket not found in the database!";
     resultDiv.className = "result invalid";
+    logMessage = "Ticket not found.";
   }
   ticketDatabase = rows.join('\n');
   updateTicketList();
+  logAudit("verify", ticketData, logMessage);
 }
 
-// ----- Verify Ticket Manually via Input Fields -----
+// ----- Verify Ticket via Manual Input -----
 function verifyTicketManual() {
   const ticketId = document.getElementById('manualTicketId').value.trim();
   const name = document.getElementById('manualAttendeeName').value.trim();
@@ -190,6 +207,19 @@ function exportCSV() {
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
   link.download = 'ticket_database.csv';
+  link.click();
+}
+
+// ----- Export Audit Log -----
+function exportAuditLog() {
+  let csv = "Timestamp,Action,Ticket ID,Name,Message\n";
+  auditLog.forEach(entry => {
+    csv += `${entry.timestamp},${entry.action},${entry.ticketData.ticketId},${entry.ticketData.name},${entry.message}\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'audit_log.csv';
   link.click();
 }
 
