@@ -26,7 +26,7 @@
   }
   
   #brandLogo {
-    width: 350px;
+    width: 400px;
     display: block;
     margin: 0 auto 0px;
   }
@@ -132,6 +132,7 @@
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    align-items: center;
   }
   
   .database table {
@@ -143,6 +144,12 @@
     padding: 8px;
     border: 1px solid #ddd;
     text-align: left;
+  }
+  
+  /* Counter Style */
+  .counter {
+    font-weight: bold;
+    margin-left: 10px;
   }
   
   /* Footer */

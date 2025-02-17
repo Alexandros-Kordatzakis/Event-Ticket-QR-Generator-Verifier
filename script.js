@@ -7,11 +7,7 @@ let html5QrcodeScanner = null;
 // In-memory audit log array
 let auditLog = [];
 
-/* ----- Real-Time Sync ----- */
-// Poll the backend (CSV file) every 15 seconds to update data.
-setInterval(loadDatabase, 15000);
-
-// ----- Load Static CSV Database (for verification) -----
+/* ----- Load Static CSV Database (for verification) ----- */
 function loadDatabase() {
   fetch("tickets.csv")
     .then(response => response.text())
@@ -26,16 +22,21 @@ function loadDatabase() {
     });
 }
 
-// ----- Update Display of Ticket Database -----
+/* ----- Update Display of Ticket Database & Counter ----- */
 function updateTicketList() {
   const rows = ticketDatabase.trim().split('\n');
+  const counterEl = document.getElementById('databaseCounter');
   if (rows.length <= 1) {
     document.getElementById('ticketList').innerHTML = "<p>No tickets available.</p>";
+    counterEl.textContent = "Total Tickets: 0, Attendees: 0";
     return;
   }
   let tableHTML = "<table><thead><tr><th>Ticket ID</th><th>Name</th><th>Attended</th></tr></thead><tbody>";
+  let total = rows.length - 1;
+  let attendedCount = 0;
   for (let i = 1; i < rows.length; i++) {
     const [ticketId, name, attended] = rows[i].split(',');
+    if (attended === 'true') attendedCount++;
     tableHTML += `<tr>
       <td>${ticketId}</td>
       <td>${name}</td>
@@ -44,9 +45,10 @@ function updateTicketList() {
   }
   tableHTML += "</tbody></table>";
   document.getElementById('ticketList').innerHTML = tableHTML;
+  counterEl.textContent = `Total Tickets: ${total}, Attendees: ${attendedCount}`;
 }
 
-// ----- Generate QR Code (using old JSON encryption) -----
+/* ----- Generate QR Code (using old JSON encryption) ----- */
 function generateQR() {
   const ticketIdInput = document.getElementById('ticketId');
   const nameInput = document.getElementById('attendeeName');
@@ -83,7 +85,7 @@ function generateQR() {
   nameInput.value = '';
 }
 
-// ----- Save QR Code as Image -----
+/* ----- Save QR Code as Image ----- */
 function saveQR() {
   const qrElement = document.getElementById('qrcode');
   const canvas = qrElement.querySelector('canvas');
@@ -103,13 +105,13 @@ function saveQR() {
   link.click();
 }
 
-// ----- Audit Logging -----
+/* ----- Audit Logging ----- */
 function logAudit(action, ticketData, message) {
   const timestamp = new Date().toLocaleString();
   auditLog.push({ timestamp, action, ticketData, message });
 }
 
-// ----- Helper: Verify Ticket Data against the CSV Database -----
+/* ----- Helper: Verify Ticket Data against the CSV Database ----- */
 function verifyTicketData(ticketData, resultDiv) {
   const rows = ticketDatabase.trim().split('\n');
   let found = false;
@@ -141,7 +143,7 @@ function verifyTicketData(ticketData, resultDiv) {
   logAudit("verify", ticketData, logMessage);
 }
 
-// ----- Verify Ticket via Manual Input -----
+/* ----- Verify Ticket via Manual Input ----- */
 function verifyTicketManual() {
   const ticketId = document.getElementById('manualTicketId').value.trim();
   const name = document.getElementById('manualAttendeeName').value.trim();
@@ -155,7 +157,7 @@ function verifyTicketManual() {
   verifyTicketData(ticketData, resultDiv);
 }
 
-// ----- Start QR Code Scanner (using camera) -----
+/* ----- Start QR Code Scanner (using camera) ----- */
 function startScanner() {
   document.getElementById('verificationResult').innerHTML = "";
   // If a scanner instance exists, clear it first
@@ -188,7 +190,7 @@ function onScanError(errorMessage) {
   console.warn("Scan error:", errorMessage);
 }
 
-// ----- Toggle Manual Verification Display -----
+/* ----- Toggle Manual Verification Display ----- */
 function toggleManualVerification() {
   const container = document.getElementById('manual-verification-container');
   const toggleBtn = document.getElementById('toggleManualBtn');
@@ -201,7 +203,7 @@ function toggleManualVerification() {
   }
 }
 
-// ----- Export CSV Database (Verification Data) -----
+/* ----- Export CSV Database (Verification Data) ----- */
 function exportCSV() {
   const blob = new Blob([ticketDatabase], { type: 'text/csv' });
   const link = document.createElement('a');
@@ -210,7 +212,7 @@ function exportCSV() {
   link.click();
 }
 
-// ----- Export Audit Log -----
+/* ----- Export Audit Log ----- */
 function exportAuditLog() {
   let csv = "Timestamp,Action,Ticket ID,Name,Message\n";
   auditLog.forEach(entry => {
@@ -223,14 +225,14 @@ function exportAuditLog() {
   link.click();
 }
 
-// ----- Reload Static CSV Database -----
+/* ----- Reload Static CSV Database ----- */
 function resetDatabase() {
   if (confirm("Reload the static database? All unsaved changes will be lost.")) {
     loadDatabase();
   }
 }
 
-// ----- Initialize on Page Load -----
+/* ----- Initialize on Page Load ----- */
 document.addEventListener('DOMContentLoaded', () => {
   loadDatabase();
 });

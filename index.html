@@ -13,7 +13,7 @@
 </head>
 <body>
   <header role="banner">
-    <img id="brandLogo" src="Media/logo.png" alt="Event Logo" />
+    <img id="brandLogo" src="/Media/logo.png" alt="Event Logo" />
     <h1>Event Ticket QR Generator & Verifier</h1>
   </header>
 
@@ -56,13 +56,14 @@
       </div>
     </section>
 
-    <!-- Database & Audit Section -->
+    <!-- Ticket Database & Audit Section -->
     <section class="database">
       <h2>Ticket Database</h2>
       <div class="db-buttons">
         <button onclick="exportCSV()" aria-label="Export Ticket Database">Export CSV Database</button>
         <button onclick="resetDatabase()" aria-label="Reload Ticket Database">Reload Database</button>
         <button onclick="exportAuditLog()" aria-label="Export Audit Log">Export Audit Log</button>
+        <span id="databaseCounter" class="counter"></span>
       </div>
       <div id="ticketList"></div>
     </section>
