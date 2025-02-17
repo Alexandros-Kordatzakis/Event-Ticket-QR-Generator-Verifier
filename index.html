@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event QR Generator</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- QR code generator library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- QR code scanner library -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>Event Ticket QR Generator</h1>
+    <p>Generate QR codes and verify event tickets.</p>
+  </header>
+
+  <main>
+    <!-- QR Generator Section (No database link) -->
+    <section class="generator">
+      <h2>Generate QR Code</h2>
+      <div class="form-container">
+        <input type="text" id="ticketId" placeholder="Enter Ticket ID">
+        <input type="text" id="attendeeName" placeholder="Enter Attendee Name">
+        <button onclick="generateQR()">Generate QR Code</button>
+      </div>
+      <div id="qrcode" class="qr-output"></div>
+      <button id="saveQRButton" onclick="saveQR()" style="display: none;">Save QR Code</button>
+    </section>
+
+    <!-- Verification Section (Linked to CSV database) -->
+    <section class="verification">
+      <h2>Verify Ticket</h2>
+      <!-- Verification via QR Code -->
+      <div class="form-container">
+        <input type="text" id="verificationInput" placeholder='Paste ticket token here'>
+        <button onclick="verifyTicket()">Verify with QR Data</button>
+        <button onclick="startScanner()">Scan QR Code</button>
+      </div>
+      <!-- Div for the QR scanner -->
+      <div id="qr-reader" style="width:300px"></div>
+      <div id="verificationResult" class="result"></div>
+      
+      <!-- Verification via Manual Input -->
+      <h3>Or Verify Manually</h3>
+      <div class="form-container">
+        <input type="text" id="manualTicketId" placeholder="Enter Ticket ID">
+        <input type="text" id="manualAttendeeName" placeholder="Enter Attendee Name">
+        <button onclick="verifyTicketManual()">Verify Ticket Manually</button>
+      </div>
+      <div id="manualVerificationResult" class="result"></div>
+    </section>
+
+    <!-- Ticket Database Section (For verification only) -->
+    <section class="database">
+      <h2>Ticket Database</h2>
+      <div class="db-buttons">
+        <button onclick="exportCSV()">Export CSV Database</button>
+        <button onclick="resetDatabase()">Reload Database</button>
+      </div>
+      <div id="ticketList"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Event QR Generator by Alexandros Kordatzakis. All rights reserved.</p>
+  </footer>
+</body>
+</html>
