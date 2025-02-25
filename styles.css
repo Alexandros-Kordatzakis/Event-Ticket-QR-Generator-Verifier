@@ -1,176 +1,232 @@
+/*
+styles.css
+Author: Alexandros Kordatzakis
+Created: 2025
+*/
+
 /* CSS Variables for Customizable Branding */
 :root {
-    --primary-color: #007bff;
-    --secondary-color: #0056b3;
-    --success-color: #28a745;
-    --success-hover: #218838;
-    --background-color: #f4f4f9;
-    --text-color: #333;
-  }
-  
-  /* General Styles */
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    line-height: 1.6;
-  }
-  
-  header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 20px;
-    text-align: center;
-  }
-  
-  #brandLogo {
-    width: 400px;
-    display: block;
-    margin: auto auto auto;
-  }
-  
-  header h1 {
-    margin: 0;
-    font-size: 2.5rem;
-  }
-  
-  header p {
-    margin: 5px 0 0;
-    font-size: 1.1rem;
-  }
-  
+  --primary-color: #007bff;
+  --secondary-color: #0056b3;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --background-color: #f4f4f9;
+  --text-color: #333;
+}
+
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+#brandLogo {
+  width: 400px;
+  display: block;
+  margin: auto;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+header p {
+  margin: 5px 0 0;
+  font-size: 1.1rem;
+}
+
+main {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  /* Extra bottom margin to prevent footer overlap */
+  margin-bottom: 80px;
+}
+
+h2 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+/* Form Styles */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input[type="text"],
+input[type="password"] {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--secondary-color);
+}
+
+/* QR Output */
+.qr-output {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Save QR Button */
+#saveQRButton {
+  margin-top: 10px;
+  background-color: var(--success-color);
+}
+
+#saveQRButton:hover {
+  background-color: var(--success-hover);
+}
+
+/* Verification Result */
+.result {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.result.valid {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.result.invalid {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.result.used {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/* Database Section */
+.database .db-buttons {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.database table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.database th, .database td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+/* Counter Style */
+.counter {
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 10px;
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
   main {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    /* Extra bottom margin to prevent footer overlap */
-    margin-bottom: 80px;
-  }
-  
-  h2 {
-    color: var(--primary-color);
-    margin-bottom: 20px;
-  }
-  
-  /* Form Styles */
-  .form-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  input[type="text"] {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-  
-  button {
-    padding: 10px 20px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: var(--secondary-color);
-  }
-  
-  /* QR Output */
-  .qr-output {
-    margin-top: 20px;
-    text-align: center;
-  }
-  
-  /* Save QR Button */
-  #saveQRButton {
-    margin-top: 10px;
-    background-color: var(--success-color);
-  }
-  
-  #saveQRButton:hover {
-    background-color: var(--success-hover);
-  }
-  
-  /* Verification Result */
-  .result {
-    margin-top: 20px;
-    padding: 10px;
-    border-radius: 4px;
-    text-align: center;
-    font-weight: bold;
-  }
-  
-  .result.valid {
-    background-color: #d4edda;
-    color: #155724;
-  }
-  
-  .result.invalid {
-    background-color: #f8d7da;
-    color: #721c24;
-  }
-  
-  .result.used {
-    background-color: #fff3cd;
-    color: #856404;
-  }
-  
-  /* Database Section */
-  .database .db-buttons {
-    margin-bottom: 10px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  
-  .database table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .database th, .database td {
-    padding: 8px;
-    border: 1px solid #ddd;
-    text-align: left;
-  }
-  
-  /* Counter Style */
-  .counter {
-    font-weight: bold;
-    margin-left: 10px;
-  }
-  
-  /* Footer */
-  footer {
-    text-align: center;
-    padding: 10px;
-    background-color: var(--primary-color);
-    color: white;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 600px) {
-    main {
       margin: 10px;
       padding: 15px;
-    }
-    header h1 {
-      font-size: 2rem;
-    }
-    button {
-      font-size: 0.9rem;
-    }
   }
-  
+  header h1 {
+      font-size: 2rem;
+  }
+  button {
+      font-size: 0.9rem;
+  }
+}
+
+/* ADMIN */
+#admin-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+#admin-content th, #admin-content td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 4px;
+  margin-bottom: 10px;
+}
+
+#decodedQRData {
+  margin-top: 10px;
+  background-color: #f1f1f1;
+  font-family: monospace;
+}
+
+/* Additional Styles for Admin Page */
+
+/* Utility class to hide elements */
+.hidden {
+  display: none;
+}
+
+/* Error message styling */
+.error-message {
+  text-align: center;
+  color: red;
+}
+
+/* Style for the admin QR reader */
+.qr-reader {
+  width: 300px;
+  margin: auto;
+}
+
+/* Style for the decoded QR data display */
+.decoded-data {
+  border: 1px solid #ccc;
+  padding: 10px;
+}

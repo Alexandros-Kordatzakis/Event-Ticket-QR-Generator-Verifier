@@ -1,0 +1,59 @@
+<!--
+admin.html 
+Author: Alexandros Kordatzakis
+Created: 2025
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Event QR</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="page-wrapper">
+    <header>
+      <h1>Admin Panel - Event QR</h1>
+      <button onclick="goToMain()">Back to Main Page</button>
+    </header>
+
+    <main>
+      <!-- PIN Section -->
+      <section id="pin-section" class="card">
+        <h2>Enter Admin PIN</h2>
+        <div class="form-container">
+          <input type="password" id="adminPin" placeholder="Enter PIN" inputmode="numeric" pattern="[0-9]*">
+          <button onclick="checkAdminPIN()">Enter</button>
+          <p id="pinError" class="error-message"></p>
+        </div>
+      </section>
+
+      <!-- Admin Content -->
+      <section id="admin-content" class="card hidden">
+        <h2>Admin Dashboard</h2>
+        <div class="form-container">
+          <!-- Search Bar -->
+          <input type="text" id="searchInput" placeholder="Search by Ticket ID or Name" onkeyup="searchTickets()">
+          <!-- Ticket Database -->
+          <div id="adminTicketList"></div>
+          <!-- QR Code Scanner -->
+          <h3>QR Code Scanner</h3>
+          <button onclick="startAdminScanner()">Start Scanner</button>
+          <div id="admin-qr-reader" class="qr-reader"></div>
+          <!-- Display Decoded QR Data -->
+          <h4>Decoded QR Data</h4>
+          <div id="decodedQRData" class="decoded-data"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Event QR Generator by Alexandros Kordatzakis. All rights reserved.</p>
+    </footer>
+  </div>
+</body>
+</html>
