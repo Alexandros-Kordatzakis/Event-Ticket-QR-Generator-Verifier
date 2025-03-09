@@ -38,6 +38,13 @@ Created: 2025
         <div class="form-container">
           <!-- Search Bar -->
           <input type="text" id="searchInput" placeholder="Search by Ticket ID or Name" onkeyup="searchTickets()">
+          
+          <div class="db-buttons">
+            <button onclick="resetDatabase()" aria-label="Reload Ticket Database">Reload Database</button>
+            <button onclick="exportCSV()" aria-label="Export Ticket Database">Export CSV Database</button>
+            <button onclick="exportAuditLog()" aria-label="Export Audit Log">Export Audit Log</button>
+          </div>
+
           <!-- Ticket Database -->
           <div id="adminTicketList"></div>
           <!-- QR Code Scanner -->
