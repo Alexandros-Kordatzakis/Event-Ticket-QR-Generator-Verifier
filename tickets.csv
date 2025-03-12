@@ -1,9 +1,6 @@
-Ticket ID,Name,Attended
-1,John Doe,false
-2,Jane Doe,false
-3,John Smith,false
-4,John Doe,false
-5,Jane Smith,false
-6,John Doe,false
-7,Jane Doe,false
-8,John Smith,false
+Ticket ID,Name,Attended,Email
+1,Pauline Schwartz,false,pauline.schwartzguerret@yahoo.fr
+2,Lilah Rocheux,false,lilahrocheux17@gmail.com
+3,Juliette Maillot,false,juliette.maillot00@gmail.com
+4,Jeanne Avannier,false,avannierjeanne@gmail.com
+5,Achille Deflin,false,adeflin5@gmail.com

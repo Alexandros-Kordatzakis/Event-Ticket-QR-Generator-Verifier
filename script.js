@@ -44,12 +44,18 @@ function loadDatabase() {
     });
 }
 
-/* ----- Update Display of Ticket Database & Counter ----- */
+/* ----- Update Display of Ticket Database & Counter for Main Page ----- */
 function updateTicketList() {
+  // Main page does not display email
+  const listEl = document.getElementById('ticketList');
+  if (!listEl) {
+    console.warn("ticketList element not found, skipping update.");
+    return;
+  }
   const rows = ticketDatabase.trim().split('\n');
   const counterEl = document.getElementById('databaseCounter');
   if (rows.length <= 1) {
-    document.getElementById('ticketList').innerHTML = "<p>No tickets available.</p>";
+    listEl.innerHTML = "<p>No tickets available.</p>";
     counterEl.textContent = "Total Tickets: 0, Attendees: 0";
     console.log("Ticket list updated: no tickets found.");
     return;
@@ -58,7 +64,11 @@ function updateTicketList() {
   let total = rows.length - 1;
   let attendedCount = 0;
   for (let i = 1; i < rows.length; i++) {
-    const [ticketId, name, attended] = rows[i].split(',');
+    // For main page, ignore the email column if present.
+    const columns = rows[i].split(',');
+    const ticketId = columns[0];
+    const name = columns[1];
+    const attended = columns[2];
     if (attended === 'true') attendedCount++;
     tableHTML += `<tr>
       <td>${ticketId}</td>
@@ -67,12 +77,12 @@ function updateTicketList() {
     </tr>`;
   }
   tableHTML += "</tbody></table>";
-  document.getElementById('ticketList').innerHTML = tableHTML;
+  listEl.innerHTML = tableHTML;
   counterEl.textContent = `Total Tickets: ${total}, Attendees: ${attendedCount}`;
   console.log(`Ticket list updated: ${total} tickets found, ${attendedCount} attended.`);
 }
 
-/* ----- Generate QR Code ----- */
+/* ----- Generate QR Code (unchanged) ----- */
 function generateQR() {
   const ticketIdInput = document.getElementById('ticketId');
   const nameInput = document.getElementById('attendeeName');
@@ -105,7 +115,7 @@ function generateQR() {
   logAudit("generate-qr", { ticketId, name }, "QR code generated successfully.");
 }
 
-/* ----- Save QR Code as Image ----- */
+/* ----- Save QR Code as Image (unchanged) ----- */
 function saveQR() {
   const qrElement = document.getElementById('qrcode');
   const canvas = qrElement.querySelector('canvas');
@@ -125,7 +135,7 @@ function saveQR() {
   logAudit("save-qr", { ticketId, name }, "QR code image saved successfully.");
 }
 
-/* ----- Start QR Code Scanner ----- */
+/* ----- Start QR Code Scanner (unchanged) ----- */
 function startScanner() {
   console.log("Starting QR Code Scanner...");
   document.getElementById('verificationResult').innerHTML = "";
@@ -138,7 +148,6 @@ function startScanner() {
   html5QrcodeScanner.render(onScanSuccess, onScanError);
 }
 
-/* ----- QR Scan Success Callback ----- */
 function onScanSuccess(decodedText) {
   console.log("QR code scanned. Decoded text:", decodedText);
   if (html5QrcodeScanner) {
@@ -160,7 +169,7 @@ function onScanError(errorMessage) {
   console.warn("Scan error:", errorMessage);
 }
 
-/* ----- Verify Ticket Data ----- */
+/* ----- Verify Ticket Data (updated to preserve email if present) ----- */
 function verifyTicketData(ticketData, resultDiv) {
   console.log("Verifying ticket data:", ticketData);
   const rows = ticketDatabase.trim().split('\n');
@@ -168,11 +177,17 @@ function verifyTicketData(ticketData, resultDiv) {
   let logMessage = "";
 
   for (let i = 1; i < rows.length; i++) {
-    const [dbTicketId, dbName, attended] = rows[i].split(',');
+    const columns = rows[i].split(',');
+    const dbTicketId = columns[0];
+    const dbName = columns[1];
+    const attended = columns[2];
+    const email = columns[3] || ""; // preserve email if present
+
     if (dbTicketId === ticketData.ticketId && dbName === ticketData.name) {
       found = true;
       if (attended === 'false') {
-        rows[i] = `${dbTicketId},${dbName},true`;
+        // Update row while preserving email if exists
+        rows[i] = `${dbTicketId},${dbName},true,${email}`;
         resultDiv.innerHTML = "✅ Valid ticket! Attendee marked as attended.";
         resultDiv.className = "result valid";
         logMessage = "Ticket verified successfully.";
@@ -199,7 +214,7 @@ function verifyTicketData(ticketData, resultDiv) {
   logAudit("verify", ticketData, logMessage);
 }
 
-/* ----- Manual Ticket Verification ----- */
+/* ----- Manual Ticket Verification (unchanged) ----- */
 function verifyTicketManual() {
   const ticketId = document.getElementById('manualTicketId').value.trim();
   const name = document.getElementById('manualAttendeeName').value.trim();
@@ -215,7 +230,7 @@ function verifyTicketManual() {
   verifyTicketData(ticketData, resultDiv);
 }
 
-/* ----- Toggle Manual Verification Display ----- */
+/* ----- Toggle Manual Verification Display (unchanged) ----- */
 function toggleManualVerification() {
   const container = document.getElementById('manual-verification-container');
   const toggleBtn = document.getElementById('toggleManualBtn');
@@ -232,7 +247,7 @@ function toggleManualVerification() {
   }
 }
 
-/* ----- Export CSV Database ----- */
+/* ----- Export CSV Database (unchanged) ----- */
 function exportCSV() {
   console.log("Exporting CSV Database...");
   const blob = new Blob([ticketDatabase], { type: 'text/csv' });
@@ -244,7 +259,7 @@ function exportCSV() {
   logAudit("export-csv", {}, "CSV database exported successfully.");
 }
 
-/* ----- Export Audit Log ----- */
+/* ----- Export Audit Log (unchanged) ----- */
 function exportAuditLog() {
   console.log("Exporting Audit Log...");
   let csv = "Timestamp,Action,Ticket ID,Name,Message\n";
@@ -260,7 +275,7 @@ function exportAuditLog() {
   logAudit("export-audit", {}, "Audit log exported successfully.");
 }
 
-/* ----- Reload Database ----- */
+/* ----- Reload Database (unchanged) ----- */
 function resetDatabase() {
   if (confirm("Reload the static database? All unsaved changes will be lost.")) {
     console.log("Database reset initiated by user.");
@@ -274,7 +289,7 @@ function resetDatabase() {
 
 /* ===================== ADMIN PAGE ===================== */
 
-/* ----- PIN Verification ----- */
+/* ----- PIN Verification (unchanged) ----- */
 function checkAdminPIN() {
   const enteredPIN = document.getElementById('adminPin').value;
   console.log("Admin PIN entered:", enteredPIN);
@@ -291,7 +306,7 @@ function checkAdminPIN() {
   }
 }
 
-/* ----- Load Admin Dashboard ----- */
+/* ----- Load Admin Dashboard (unchanged) ----- */
 function loadAdminDashboard() {
   console.log("Loading Admin Dashboard...");
   fetch("tickets.csv")
@@ -310,16 +325,22 @@ function loadAdminDashboard() {
     });
 }
 
+/* ----- Render Admin Table (updated to include Email) ----- */
 function renderAdminTable() {
   const rows = ticketDatabase.trim().split('\n');
-  let tableHTML = "<table><thead><tr><th>Ticket ID</th><th>Name</th><th>Attended</th></tr></thead><tbody>";
+  let tableHTML = "<table><thead><tr><th>Ticket ID</th><th>Name</th><th>Attended</th><th>Email</th></tr></thead><tbody>";
 
   for (let i = 1; i < rows.length; i++) {
-    const [ticketId, name, attended] = rows[i].split(',');
+    const columns = rows[i].split(',');
+    const ticketId = columns[0];
+    const name = columns[1];
+    const attended = columns[2];
+    const email = columns[3] ? columns[3] : "";
     tableHTML += `<tr>
       <td>${ticketId}</td>
       <td>${name}</td>
       <td>${attended === 'true' ? 'Yes' : 'No'}</td>
+      <td>${email}</td>
     </tr>`;
   }
 
@@ -329,20 +350,29 @@ function renderAdminTable() {
   logAudit("render-admin-table", {}, "Admin ticket table rendered.");
 }
 
-/* ----- Admin Search Functionality ----- */
+/* ----- Admin Search Functionality (updated to include Email) ----- */
 function searchTickets() {
   const query = document.getElementById('searchInput').value.toLowerCase();
   console.log("Admin search initiated with query:", query);
   const rows = ticketDatabase.trim().split('\n');
-  let tableHTML = "<table><thead><tr><th>Ticket ID</th><th>Name</th><th>Attended</th></tr></thead><tbody>";
+  let tableHTML = "<table><thead><tr><th>Ticket ID</th><th>Name</th><th>Attended</th><th>Email</th></tr></thead><tbody>";
   let matches = 0;
   for (let i = 1; i < rows.length; i++) {
-    const [ticketId, name, attended] = rows[i].split(',');
-    if (ticketId.toLowerCase().includes(query) || name.toLowerCase().includes(query)) {
+    const columns = rows[i].split(',');
+    const ticketId = columns[0];
+    const name = columns[1];
+    const attended = columns[2];
+    const email = columns[3] ? columns[3] : "";
+    if (
+      ticketId.toLowerCase().includes(query) ||
+      name.toLowerCase().includes(query) ||
+      email.toLowerCase().includes(query)
+    ) {
       tableHTML += `<tr>
         <td>${ticketId}</td>
         <td>${name}</td>
         <td>${attended === 'true' ? 'Yes' : 'No'}</td>
+        <td>${email}</td>
       </tr>`;
       matches++;
     }
@@ -353,7 +383,7 @@ function searchTickets() {
   logAudit("search", { query }, `Admin search completed. Found ${matches} matching tickets.`);
 }
 
-/* ----- Admin QR Code Scanner with Raw Data ----- */
+/* ----- Admin QR Code Scanner with Raw Data (unchanged) ----- */
 function startAdminScanner() {
   console.log("Starting Admin QR Code Scanner...");
   document.getElementById('decodedQRData').innerText = "";
@@ -397,7 +427,7 @@ function onAdminScanError(errorMessage) {
 
 /* ===================== NAVIGATION ===================== */
 
-/* ----- Navigation Between Pages ----- */
+/* ----- Navigation Between Pages (unchanged) ----- */
 function goToAdmin() {
   console.log("Navigating to Admin Panel...");
   logAudit("navigation", {}, "Navigated to Admin Panel.");
@@ -410,7 +440,7 @@ function goToMain() {
   window.location.href = "index.html";
 }
 
-/* ----- Initialize on Page Load ----- */
+/* ----- Initialize on Page Load (unchanged) ----- */
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Document loaded. Initializing application...");
   loadDatabase();
