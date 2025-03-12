@@ -179,6 +179,22 @@ footer {
   button {
       font-size: 0.9rem;
   }
+  /* Allow horizontal scrolling for the admin table */
+  #adminTicketList {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Ensure the table has a minimum width to avoid squishing columns */
+  #adminTicketList table {
+    width: 100%;
+    min-width: 500px;
+  }
+  /* Optional: adjust font size for better readability */
+  #admin-content input,
+  #admin-content button,
+  #admin-content table {
+    font-size: 0.9rem;
+  }
 }
 
 /* ADMIN */
