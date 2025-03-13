@@ -10,7 +10,7 @@ let lastGeneratedTicket = null;
 let html5QrcodeScanner = null;
 let html5QrcodeAdminScanner = null;
 let auditLog = [];
-const ADMIN_PIN = "2050"; // YES, I know this is public.
+const ADMIN_PIN = "2050"; // YES, I know this is public. Doesn't matter.
 
 /* ----- Audit Logging Function ----- */
 function logAudit(action, ticketData, message) {
