@@ -93,6 +93,16 @@ button:hover {
   background-color: var(--secondary-color);
 }
 
+/* Danger Button */
+.danger-button {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+}
+.danger-button:hover {
+  background-color: #c82333;
+}
+
 /* QR Output */
 .qr-output {
   margin-top: 20px;
@@ -140,6 +150,7 @@ button:hover {
   gap: 10px;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center; /* Center the buttons horizontally */
 }
 
 .database table {
@@ -194,6 +205,12 @@ footer {
   #admin-content button,
   #admin-content table {
     font-size: 0.9rem;
+  }
+
+  #admin-content .db-buttons {
+    display: flex;
+    flex-wrap: wrap;      /* allow buttons to wrap to next line on small screens */
+    gap: 10px;           /* space between buttons */
   }
 }
 

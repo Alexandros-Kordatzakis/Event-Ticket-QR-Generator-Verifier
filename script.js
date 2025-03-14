@@ -10,7 +10,7 @@ let lastGeneratedTicket = null;
 let html5QrcodeScanner = null;
 let html5QrcodeAdminScanner = null;
 let auditLog = [];
-const ADMIN_PIN = "2050"; // YES, I know this is public. Doesn't matter.
+const ADMIN_PIN_BASE64 = "MjA1MA=="; // Base64 encoded "2050"
 
 /* ----- Audit Logging Function ----- */
 function logAudit(action, ticketData, message) {
@@ -23,6 +23,35 @@ function logAudit(action, ticketData, message) {
   auditLog.push(entry);
 }
 
+/* ----- Local Storage Attendance Management ----- */
+function loadAttendanceFromLocalStorage() {
+  let data = localStorage.getItem("attendanceData");
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      console.error("Error parsing localStorage attendanceData:", e);
+      logAudit("localStorage-error", {}, "Error parsing attendanceData from localStorage.");
+    }
+  }
+  return {};
+}
+
+function updateLocalAttendance() {
+  // Parse ticketDatabase and update localStorage attendance data.
+  let rows = ticketDatabase.trim().split('\n');
+  let attendance = {};
+  for (let i = 1; i < rows.length; i++) {
+    let columns = rows[i].split(',');
+    let ticketId = columns[0];
+    let attended = columns[2] === 'true';
+    attendance[ticketId] = attended;
+  }
+  localStorage.setItem("attendanceData", JSON.stringify(attendance));
+  console.log("Local attendance data updated in localStorage.");
+  logAudit("localStorage-update", {}, "Local attendance data updated.");
+}
+
 /* ===================== MAIN PAGE ===================== */
 
 /* ----- Load Static CSV Database (for verification) ----- */
@@ -31,14 +60,24 @@ function loadDatabase() {
   fetch("tickets.csv")
     .then(response => response.text())
     .then(data => {
-      ticketDatabase = data;
-      console.log("tickets.csv loaded successfully.");
-      logAudit("load-csv", {}, "CSV loaded successfully.");
+      let rows = data.trim().split('\n');
+      const attendanceData = loadAttendanceFromLocalStorage();
+      for (let i = 1; i < rows.length; i++) {
+        let columns = rows[i].split(',');
+        let ticketId = columns[0];
+        if (attendanceData.hasOwnProperty(ticketId)) {
+          columns[2] = attendanceData[ticketId] ? 'true' : 'false';
+        }
+        rows[i] = columns.join(',');
+      }
+      ticketDatabase = rows.join('\n');
+      console.log("tickets.csv loaded and attendance merged successfully.");
+      logAudit("load-csv", {}, "CSV loaded and attendance merged successfully.");
       updateTicketList();
     })
     .catch(error => {
       console.error("Error loading tickets.csv:", error);
-      ticketDatabase = "Ticket ID,Name,Attended\n";
+      ticketDatabase = "Ticket ID,Name,Attended,Email\n";
       logAudit("load-csv-error", {}, "Error loading CSV: " + error);
       updateTicketList();
     });
@@ -64,7 +103,6 @@ function updateTicketList() {
   let total = rows.length - 1;
   let attendedCount = 0;
   for (let i = 1; i < rows.length; i++) {
-    // For main page, ignore the email column if present.
     const columns = rows[i].split(',');
     const ticketId = columns[0];
     const name = columns[1];
@@ -169,7 +207,7 @@ function onScanError(errorMessage) {
   console.warn("Scan error:", errorMessage);
 }
 
-/* ----- Verify Ticket Data (updated to preserve email if present) ----- */
+/* ----- Verify Ticket Data (updated to preserve email if present & update localStorage) ----- */
 function verifyTicketData(ticketData, resultDiv) {
   console.log("Verifying ticket data:", ticketData);
   const rows = ticketDatabase.trim().split('\n');
@@ -210,6 +248,7 @@ function verifyTicketData(ticketData, resultDiv) {
   }
 
   ticketDatabase = rows.join('\n');
+  updateLocalAttendance();
   updateTicketList();
   logAudit("verify", ticketData, logMessage);
 }
@@ -275,7 +314,7 @@ function exportAuditLog() {
   logAudit("export-audit", {}, "Audit log exported successfully.");
 }
 
-/* ----- Reload Database (unchanged) ----- */
+/* ----- Reset Database (unchanged) ----- */
 function resetDatabase() {
   if (confirm("Reload the static database? All unsaved changes will be lost.")) {
     console.log("Database reset initiated by user.");
@@ -287,13 +326,143 @@ function resetDatabase() {
   }
 }
 
+/* ===================== NEW FUNCTIONS: Main Page Attendance Management ===================== */
+function mainResetAttendance() {
+  console.log("Main page reset attendance initiated.");
+  logAudit("main-reset-init", {}, "User initiated main page attendance reset.");
+  if (confirm("SERIOUS ALERT: This will reset all attendance data to the original CSV state. Proceed?")) {
+    let pin = prompt("Enter ADMIN PIN to confirm reset:");
+    if (pin && btoa(pin) === ADMIN_PIN_BASE64) {
+      localStorage.removeItem("attendanceData");
+      console.log("Main page attendance reset successful.");
+      logAudit("main-reset-success", {}, "Attendance data reset successfully from main page.");
+      loadDatabase();
+      alert("Attendance has been reset.");
+    } else {
+      console.warn("Main page attendance reset failed: Incorrect PIN.");
+      logAudit("main-reset-failed", {}, "Incorrect ADMIN PIN for main page attendance reset.");
+      alert("Incorrect PIN. Attendance reset aborted.");
+    }
+  } else {
+    console.log("Main page attendance reset canceled by user.");
+    logAudit("main-reset-canceled", {}, "User canceled main page attendance reset.");
+  }
+}
+
+function mainEditAttendance() {
+  console.log("Main page edit attendance initiated.");
+  logAudit("main-edit-init", {}, "User initiated main page attendance edit.");
+  if (confirm("SERIOUS ALERT: This will allow you to edit attendance for a ticket. Proceed?")) {
+    let pin = prompt("Enter ADMIN PIN to confirm editing:");
+    if (pin && btoa(pin) === ADMIN_PIN_BASE64) {
+      let ticketId = prompt("Enter Ticket ID to edit:");
+      if (ticketId) {
+        let newStatus = prompt("Enter new attendance status (true/false):");
+        if (newStatus === "true" || newStatus === "false") {
+          updateAttendanceForTicket(ticketId, newStatus === "true");
+          alert("Attendance updated successfully.");
+          console.log(`Main page attendance updated for Ticket ID ${ticketId} to ${newStatus}.`);
+          logAudit("main-edit-success", { ticketId: ticketId }, `Attendance updated to ${newStatus} on main page.`);
+        } else {
+          alert("Invalid attendance status. Please enter true or false.");
+          console.warn("Main page edit attendance failed: Invalid attendance status input.");
+          logAudit("main-edit-failed", { ticketId: ticketId }, "Invalid attendance status entered on main page.");
+        }
+      } else {
+        alert("Ticket ID is required.");
+        console.warn("Main page edit attendance failed: No Ticket ID provided.");
+        logAudit("main-edit-failed", {}, "No Ticket ID provided on main page edit.");
+      }
+    } else {
+      console.warn("Main page edit attendance failed: Incorrect PIN.");
+      logAudit("main-edit-failed", {}, "Incorrect ADMIN PIN for main page edit.");
+      alert("Incorrect PIN. Edit attendance aborted.");
+    }
+  } else {
+    console.log("Main page edit attendance canceled by user.");
+    logAudit("main-edit-canceled", {}, "User canceled main page attendance edit.");
+  }
+}
+
+/* ===================== NEW FUNCTIONS: Admin Page Attendance Management ===================== */
+function adminResetAttendance() {
+  console.log("Admin page reset attendance initiated.");
+  logAudit("admin-reset-init", {}, "Admin initiated attendance reset.");
+  if (confirm("SERIOUS ALERT: This will reset all attendance data to the original CSV state. Proceed?")) {
+    localStorage.removeItem("attendanceData");
+    console.log("Admin page attendance reset successful.");
+    logAudit("admin-reset-success", {}, "Attendance data reset successfully from admin page.");
+    loadAdminDashboard();  // Refresh the admin dashboard immediately after reset.
+    alert("Attendance has been reset.");
+  } else {
+    console.log("Admin page attendance reset canceled by user.");
+    logAudit("admin-reset-canceled", {}, "Admin canceled attendance reset.");
+  }
+}
+
+function adminEditAttendance() {
+  console.log("Admin page edit attendance initiated.");
+  logAudit("admin-edit-init", {}, "Admin initiated attendance edit.");
+  if (confirm("SERIOUS ALERT: This will allow you to edit attendance for a ticket. Proceed?")) {
+    let ticketId = prompt("Enter Ticket ID to edit:");
+    if (ticketId) {
+      let newStatus = prompt("Enter new attendance status (true/false):");
+      if (newStatus === "true" || newStatus === "false") {
+        updateAttendanceForTicket(ticketId, newStatus === "true");
+        alert("Attendance updated successfully.");
+        console.log(`Admin page attendance updated for Ticket ID ${ticketId} to ${newStatus}.`);
+        logAudit("admin-edit-success", { ticketId: ticketId }, `Attendance updated to ${newStatus} on admin page.`);
+      } else {
+        alert("Invalid attendance status. Please enter true or false.");
+        console.warn("Admin page edit attendance failed: Invalid attendance status input.");
+        logAudit("admin-edit-failed", { ticketId: ticketId }, "Invalid attendance status entered on admin page.");
+      }
+    } else {
+      alert("Ticket ID is required.");
+      console.warn("Admin page edit attendance failed: No Ticket ID provided.");
+      logAudit("admin-edit-failed", {}, "No Ticket ID provided on admin page edit.");
+    }
+  } else {
+    console.log("Admin page edit attendance canceled by user.");
+    logAudit("admin-edit-canceled", {}, "Admin canceled attendance edit.");
+  }
+}
+
+function updateAttendanceForTicket(ticketId, attendedStatus) {
+  let rows = ticketDatabase.trim().split('\n');
+  let found = false;
+  for (let i = 1; i < rows.length; i++) {
+    let columns = rows[i].split(',');
+    if (columns[0] === ticketId) {
+      columns[2] = attendedStatus ? 'true' : 'false';
+      rows[i] = columns.join(',');
+      found = true;
+      break;
+    }
+  }
+  if (found) {
+    ticketDatabase = rows.join('\n');
+    updateLocalAttendance();
+    updateTicketList();
+    // Also update admin table if it exists
+    if (document.getElementById('adminTicketList')) {
+      renderAdminTable();
+    }
+    console.log(`Attendance for Ticket ID ${ticketId} updated to ${attendedStatus}.`);
+    logAudit("update-attendance", { ticketId: ticketId }, `Attendance updated to ${attendedStatus}.`);
+  } else {
+    console.warn(`Ticket ID ${ticketId} not found for attendance update.`);
+    logAudit("update-attendance-failed", { ticketId: ticketId }, "Ticket ID not found.");
+  }
+}
+
 /* ===================== ADMIN PAGE ===================== */
 
-/* ----- PIN Verification (unchanged) ----- */
+/* ----- PIN Verification (updated to use Base64) ----- */
 function checkAdminPIN() {
   const enteredPIN = document.getElementById('adminPin').value;
   console.log("Admin PIN entered:", enteredPIN);
-  if (enteredPIN === ADMIN_PIN) {
+  if (btoa(enteredPIN) === ADMIN_PIN_BASE64) {
     console.log("Admin PIN verification successful.");
     logAudit("admin-login", {}, "Admin PIN verified successfully.");
     document.getElementById('pin-section').style.display = 'none';
@@ -312,17 +481,34 @@ function loadAdminDashboard() {
   fetch("tickets.csv")
     .then(response => response.text())
     .then(data => {
-      ticketDatabase = data;
-      console.log("Admin Dashboard loaded: tickets.csv data retrieved.");
-      logAudit("admin-load", {}, "Admin Dashboard loaded; CSV retrieved successfully.");
+      let rows = data.trim().split('\n');
+      const attendanceData = loadAttendanceFromLocalStorage();
+      for (let i = 1; i < rows.length; i++) {
+        let columns = rows[i].split(',');
+        let ticketId = columns[0];
+        if (attendanceData.hasOwnProperty(ticketId)) {
+          columns[2] = attendanceData[ticketId] ? 'true' : 'false';
+        }
+        rows[i] = columns.join(',');
+      }
+      ticketDatabase = rows.join('\n');
+      console.log("Admin Dashboard loaded: tickets.csv data retrieved and attendance merged.");
+      logAudit("admin-load", {}, "Admin Dashboard loaded; CSV retrieved and attendance merged successfully.");
       renderAdminTable();
     })
     .catch(error => {
       console.error("Error loading tickets.csv for Admin Dashboard:", error);
-      ticketDatabase = "Ticket ID,Name,Attended\n";
+      ticketDatabase = "Ticket ID,Name,Attended,Email\n";
       logAudit("admin-load-error", {}, "Error loading CSV for Admin Dashboard: " + error);
       renderAdminTable();
     });
+}
+
+/* ----- Open Google Form ----- */
+function openGoogleForm() {
+  console.log("Opening Googkle Form...");
+  logAudit("open-google-form", {}, "Opening Google Form.");
+  window.open("https://docs.google.com/spreadsheets/d/1HhjLiQ9MtxaB5dDFzstyGboadOsu6HyL38CNCJUMx84/edit?usp=sharing", "_blank");
 }
 
 /* ----- Render Admin Table (updated to include Email) ----- */
