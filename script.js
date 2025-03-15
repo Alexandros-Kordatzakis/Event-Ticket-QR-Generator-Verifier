@@ -176,14 +176,32 @@ function saveQR() {
 /* ----- Start QR Code Scanner (unchanged) ----- */
 function startScanner() {
   console.log("Starting QR Code Scanner...");
-  document.getElementById('verificationResult').innerHTML = "";
+
+  // Clear any old instance first
   if (html5QrcodeScanner) {
-    html5QrcodeScanner.clear();
+    html5QrcodeScanner.clear().catch(err => console.error("Clear error:", err));
+    html5QrcodeScanner = null;
   }
-  html5QrcodeScanner = new Html5QrcodeScanner(
-    "qr-reader", { fps: 10, qrbox: 250 }
+
+  // Basic check for library
+  if (typeof Html5QrcodeScanner === "undefined") {
+    console.error("Html5QrcodeScanner is not loaded or undefined!");
+    return;
+  }
+
+  // Start scanning
+  document.getElementById('verificationResult').innerHTML = "";
+  html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
+  html5QrcodeScanner.render(
+    function(decodedText, decodedResult) {
+      console.log("Scan Success:", decodedText);
+      onScanSuccess(decodedText); 
+    },
+    function(errorMessage) {
+      console.warn("Scan Error:", errorMessage);
+      onScanError(errorMessage);
+    }
   );
-  html5QrcodeScanner.render(onScanSuccess, onScanError);
 }
 
 function onScanSuccess(decodedText) {
