@@ -191,7 +191,7 @@ function startScanner() {
 
   // Start scanning
   document.getElementById('verificationResult').innerHTML = "";
-  html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
+  html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 60, qrbox: 250 });
   html5QrcodeScanner.render(
     function(decodedText, decodedResult) {
       console.log("Scan Success:", decodedText);
@@ -597,7 +597,7 @@ function startAdminScanner() {
   }
 
   html5QrcodeAdminScanner = new Html5QrcodeScanner(
-    "admin-qr-reader", { fps: 10, qrbox: 250 }
+    "admin-qr-reader", { fps: 60, qrbox: 250 }
   );
   html5QrcodeAdminScanner.render(onAdminScanSuccess, onAdminScanError);
 }
