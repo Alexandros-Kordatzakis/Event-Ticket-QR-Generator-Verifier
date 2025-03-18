@@ -170,6 +170,14 @@ button:hover {
   margin-left: 10px;
 }
 
+/* Scrollable Table Container */
+.scrollable-table {
+  max-height: 470px; /* Adjust the height as needed */
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  margin-top: 10px;
+}
+
 /* Footer */
 footer {
   text-align: center;

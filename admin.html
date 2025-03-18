@@ -49,8 +49,10 @@ Created: 2025
             <button class="danger-button" onclick="adminEditAttendance()" aria-label="Edit Attendance">Edit Attendance</button>
           </div>
 
-          <!-- Ticket Database -->
-          <div id="adminTicketList"></div>
+          <!-- Wrap the admin table container in a scrollable div -->
+          <div class="scrollable-table">
+            <div id="adminTicketList"></div>
+          </div>
           <!-- QR Code Scanner -->
           <h3>QR Code Scanner</h3>
           <button onclick="startAdminScanner()">Start Scanner</button>
