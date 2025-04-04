@@ -529,6 +529,13 @@ function openGoogleForm() {
   window.open("https://docs.google.com/spreadsheets/d/1HhjLiQ9MtxaB5dDFzstyGboadOsu6HyL38CNCJUMx84/edit?usp=sharing", "_blank");
 }
 
+/* ----- Open Database ----- */
+function openTicketDatabase() {
+  console.log("Opening Ticket Database...");
+  logAudit("open-ticket-database", {}, "Opening Ticket Database.");
+  window.open("https://docs.google.com/forms/d/e/1FAIpQLSeukiFaQJWHloaqcYfl07ZiNcTIKBkwO5O4y5Ig4K3R25adIg/viewform?usp=dialog", "_blank");
+}
+
 /* ----- Render Admin Table (updated to include Email) ----- */
 function renderAdminTable() {
   const rows = ticketDatabase.trim().split('\n');
