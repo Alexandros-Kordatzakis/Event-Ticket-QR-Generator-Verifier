@@ -64,9 +64,10 @@ Created: 2025
       <div class="db-buttons">
         <button onclick="exportCSV()" aria-label="Export Ticket Database">Export CSV Database</button>
         <button onclick="exportAuditLog()" aria-label="Export Audit Log">Export Audit Log</button>
+        <button onclick="openTicketDatabase()" aria-label="Go to Tickets"><b>Tickets</b></button>
         <!-- Changed these two to danger-button class -->
-        <button class="danger-button" onclick="mainResetAttendance()" aria-label="Reset Attendance">Reset Attendance</button>
         <button class="danger-button" onclick="mainEditAttendance()" aria-label="Edit Attendance">Edit Attendance</button>
+        <button class="danger-button" onclick="mainResetAttendance()" aria-label="Reset Attendance">Reset Attendance</button>
         <span id="databaseCounter" class="counter"></span>
       </div>
       <!-- Wrap the table container in a scrollable div -->
